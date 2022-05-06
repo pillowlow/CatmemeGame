@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "chiwawabomb01pix.png",
+	"frame": {"x":1,"y":944,"w":204,"h":320},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":58,"y":0,"w":204,"h":320},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "chiwawabomb02pix.png",
+	"frame": {"x":1,"y":1,"w":214,"h":320},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":53,"y":0,"w":214,"h":320},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "chiwawabomb03pix.png",
+	"frame": {"x":1,"y":645,"w":214,"h":297},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":53,"y":23,"w":214,"h":297},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "chiwawabomb04pix.png",
+	"frame": {"x":1,"y":323,"w":214,"h":320},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":53,"y":0,"w":214,"h":320},
+	"sourceSize": {"w":320,"h":320}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "bombatlas.png",
+	"format": "RGBA8888",
+	"size": {"w":216,"h":1265},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:93bf4e41a764de592d8fb68ea5d98d3b:77d060cafc92334b845420fc975a0e68:d23a3f4c4090f088aad27372ee1460db$"
+}
+}
