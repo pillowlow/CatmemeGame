@@ -625,6 +625,7 @@ class MyGame extends Phaser.Scene {
     //console.log(explode.anims);
     explode.anims.play("explode");
 
+    // if(playerComBody.PositionX) START AT DEAD CODING
 
 
     setTimeout(function(){
@@ -637,20 +638,15 @@ class MyGame extends Phaser.Scene {
 
 
   dead(){
-    /*
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
-    this.physics.add.collider(player2, bombs, hitBomb, null, this);
-    function hitBomb(player, bomb) {
+    
+    
+    
       this.physics.pause();
-
-      player.setTint(0xff0000);
-
-      player.anims.play("turn");
 
       this.gameOver = true;
 
       sendDeadData();
-    }*/
+    
   }
   RemoveEle(arr,element){
     
