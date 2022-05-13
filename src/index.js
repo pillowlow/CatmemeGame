@@ -27,6 +27,9 @@ import explodesheetImg from "./assets/explodesheet.png";
 import angercatsheetImg from "./assets/catangersheet.png";
 import PhaserMatterCollisionPlugin from "phaser-matter-collision-plugin";
 
+// sockit.IO
+
+const socket = io('ws://localhost:8080');
 
 
 var Cloud;
@@ -46,6 +49,8 @@ var playerComBody = {
 
 
 };
+
+var keys;
 var player1;
 var player2;
 var cursors;
@@ -98,62 +103,7 @@ class MyGame extends Phaser.Scene {
     this.load.spritesheet("angercatsheet",angercatsheetImg,{frameWidth: 320, frameHeight: 320})
     this.load.atlas("chiwawabomb",bombatlaspng,bombatlasjs);
   }
-  update() {
-    
-
-    /*
-    if (cursors.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("left", true);
-      sendMyLoc("LEFT");
-    } else if (cursors.right.isDown) {
-      player.setVelocityX(160);
-
-      player.anims.play("right", true);
-      sendMyLoc("RIGHT");
-    } else {
-      player.setVelocityX(0);
-
-      player.anims.play("turn");
-    }
-    if (cursors.up.isDown && player.body.touching.down) {
-      player.setVelocityY(-330);
-      sendJumpInfo();
-    }
-    */
-
-    //getItsLoc();
-    //player 2 gelen dataya göre haraket ettir
-    timer ++ ;
-    
-    this.playerUpdate();
-    
-
-    Clouds.forEach(element => {
-      if(element.x > 1200){
-        element.setPosition(-400, 300);
-        
-        element.setVelocity(2,0);
-      };
-    });
-
-    scoreText.setText(score);
-    
-
-    if(timer % 300 ==0){
-      if(bombs.length<20){
-        // bombCreate
-        this.bombCreate();
-      }
-      this.moneyCreate();
-      
-    }
-    this.BombManaging();
-
-    
-
-
-  }
+  
 
 
   colliderCreate(){
@@ -229,26 +179,64 @@ class MyGame extends Phaser.Scene {
     this.boundaryCreate();
     this.playersCreate();
     this.nailCreate();
-    cursors = this.input.keyboard.createCursorKeys();
     this.bombCreate();
-
+    cursors = this.input.keyboard.createCursorKeys();
+    keys = this.input.keyboard.addKeys('A,D');
+    
     
     scoreText = this.add.text(16, 16, score, {
       fontSize: "32px",
       fill: "#000",
     });
     console.log(scoreText);
-
-
-
-    
-    
-    
-
-    
     
     
   }
+
+
+  update() {
+    
+
+    // input system == left 
+    // input system == deadlocked
+    // input system == right
+    
+    //player 2 gelen dataya göre haraket ettir
+    
+    let status = this.InputStatusUpdate();
+    this.playerUpdate(status);
+    this.backgroundUpdate()
+
+    scoreText.setText(score);
+    
+    timer ++ ;
+    if(timer % 300 ==0){
+      if(bombs.length<20){
+        // bombCreate
+        this.bombCreate();
+      }
+      this.moneyCreate();
+      
+    }
+    this.BombManaging();
+
+    
+
+
+  }
+
+  backgroundUpdate(){
+
+    Clouds.forEach(element => {
+      if(element.x > 1200){
+        element.setPosition(-400, 300);
+        
+        element.setVelocity(2,0);
+      };
+    });
+
+  }
+
   boundaryCreate(){
     this.add.image(400, 400, "background").setScale(0.8);
 
@@ -326,18 +314,83 @@ class MyGame extends Phaser.Scene {
     
   }
 
-  playerUpdate(){
+  
+
+
+  
+  InputStatusUpdate(){
+
+    
+
+    var player1Left = cursors.left.isDown;
+    var player2Left = keys.A.isDown;
+    var player1Right = cursors.right.isDown;
+    var player2Right = keys.D.isDown;
+
+
+    // Both left
+    if ( player1Left && player2Left && !player1Right && !player2Right) {
+      return ("BOTHLEFT");
+    }
+
+    //single left
+    if ((player1Left && !player2Left && !player2Right && !player1Right) || (player2Left && !player1Left && !player2Right && !player1Right)){
+      return ("SINGLELEFT");
+    }
+
+    //balence
+    if((player1Left && player2Right)|| (player2Left && player1Right)){
+
+      return ("BALENCE");
+    }
+
+    //Both right
+
+    if ( player1Right && player2Right && !player1Left && !player2Left ) {
+      return ("BOTHRIGHT");
+    }
+
+    
+    //Single right
+    if ((player1Right && !player2Right && !player2Left && !player1Left) || (player2Right && !player1Right && !player2Left && !player1Left)) {
+      return ("SINGLERIGHT");
+    }
+
+    //default
+    return ("BALENCE");
+
+  }
+
+  playerUpdate(Status){
     
     
     playerComBody.VelocityX = 0;
     playerComBody.VelocityY = 0;
 
-    if (cursors.left.isDown ) {
+    if (Status == "BOTHLEFT" ) {
       playerComBody.VelocityX = -5;
     }
-    if (cursors.right.isDown) {
+    else if (Status == "SINGLELEFT") {
+      playerComBody.VelocityX = -2;
+    }
+    else if (Status == "BALENCE") {
+      playerComBody.VelocityX = 0;
+    }
+    else if (Status == "BOTHRIGHT" ) {
       playerComBody.VelocityX = 5;
     }
+    else if (Status == "SINGLERIGHT") {
+      playerComBody.VelocityX = 2;
+    }
+    else{
+      playerComBody.VelocityX = 0;
+    }
+
+    
+
+
+
+    // Setting physics properties (doesnt need to change when chaning speed)
 
     for(let i=0; i<playerComBody.Bodies.length;i++){
 
@@ -542,8 +595,19 @@ class MyGame extends Phaser.Scene {
       callback: function(eventData) {
         
         const { bodyA, bodyB, gameObjectA, gameObjectB, pair } = eventData;
-        money.destroy();
+        
         score++;
+        var plusone = this.matter.add.image(money.x,money.y,"plusone").setScale(0.1
+          ).setIgnoreGravity(true).setCollisionCategory(ColliderCats.Noncollide).setVelocityY(-3);
+        money.destroy();
+
+
+        setTimeout(function(){
+          plusone.destroy();
+        //bomb.body.gameObject.setTint(" 0xffffff");
+        },700);
+
+
         
       },
       context: this 
@@ -635,6 +699,16 @@ class MyGame extends Phaser.Scene {
 
   }
 
+  
+
+  
+
+
+
+
+
+
+
 
 
   dead(){
@@ -700,7 +774,7 @@ const game = new Phaser.Game(config);
 
 
 
-const socket = io('ws://localhost:8080');
+
 
 
 
